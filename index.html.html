@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ciencia de Datos e Inteligencia Artificial | UTMACH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --utmach-blue: #025792;
+            --utmach-bright: #0a84ff;
+            --cyan-glow: #00f2fe;
+            --sky-glow: #38bdf8;
+            --indigo-glow: #6366f1;
+            --bg-deep: #020712;
+            --card-bg: rgba(6, 15, 32, 0.74);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image:
+                radial-gradient(circle at 18% 20%, rgba(2, 87, 146, 0.35) 0%, transparent 45%),
+                radial-gradient(circle at 82% 80%, rgba(0, 242, 254, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow: hidden;
+            font-family: 'Outfit', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            color: var(--text-main);
+            perspective: 1200px;
+        }
+
+        /* Lienzo de fondo: Red Neuronal + Lluvia Cuántica de Datos */
+        canvas#neural-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Rejilla holográfica sutil de fondo */
+        .cyber-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 242, 254, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 254, 0.035) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 85%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Tarjeta principal con Glassmorphism de alto nivel y borde luminoso */
+        .portal-card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 580px;
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 38px 36px 32px;
+            text-align: center;
+            backdrop-filter: blur(22px) saturate(180%);
+            -webkit-backdrop-filter: blur(22px) saturate(180%);
+            border: 1px solid rgba(0, 242, 254, 0.24);
+            box-shadow:
+                0 25px 60px -15px rgba(0, 0, 0, 0.85),
+                0 0 45px rgba(2, 87, 146, 0.35),
+                inset 0 1px 1px rgba(255, 255, 255, 0.18);
+            transform-style: preserve-3d;
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+            animation: cardEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            overflow: hidden;
+        }
+
+        @keyframes cardEntrance {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.94);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Esquinas tecnológicas tipo HUD */
+        .hud-corner {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-color: var(--cyan-glow);
+            opacity: 0.65;
+            pointer-events: none;
+        }
+        .hud-tl { top: 14px; left: 14px; border-top: 2px solid; border-left: 2px solid; border-top-left-radius: 6px; }
+        .hud-tr { top: 14px; right: 14px; border-top: 2px solid; border-right: 2px solid; border-top-right-radius: 6px; }
+        .hud-bl { bottom: 14px; left: 14px; border-bottom: 2px solid; border-left: 2px solid; border-bottom-left-radius: 6px; }
+        .hud-br { bottom: 14px; right: 14px; border-bottom: 2px solid; border-right: 2px solid; border-bottom-right-radius: 6px; }
+
+        /* Insignia superior de estado */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(2, 87, 146, 0.28);
+            border: 1px solid rgba(0, 242, 254, 0.35);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: #bae6fd;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--cyan-glow);
+            box-shadow: 0 0 10px var(--cyan-glow), 0 0 20px var(--cyan-glow);
+            animation: pulseDot 1.6s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.55; }
+        }
+
+        /* --- SELLO UTMACH CON HALO ORBITAL DE IA --- */
+        .emblem-stage {
+            position: relative;
+            width: 176px;
+            height: 176px;
+            margin: 0 auto 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Resplandor radial detrás del sello */
+        .emblem-aura {
+            position: absolute;
+            inset: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.42) 0%, rgba(2, 87, 146, 0.5) 55%, transparent 75%);
+            filter: blur(14px);
+            animation: auraBreath 4s ease-in-out infinite;
+        }
+
+        @keyframes auraBreath {
+            0%, 100% { transform: scale(0.96); opacity: 0.8; }
+            50% { transform: scale(1.08); opacity: 1; }
+        }
+
+        /* Anillos orbitales SVG alrededor del sello */
+        .orbital-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .orbit-cw {
+            transform-origin: center;
+            animation: rotateCW 18s linear infinite;
+        }
+
+        .orbit-ccw {
+            transform-origin: center;
+            animation: rotateCCW 12s linear infinite;
+        }
+
+        @keyframes rotateCW {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateCCW {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        /* Medallón del Sello Circular UTMACH */
+        .seal-medallion {
+            position: relative;
+            width: 134px;
+            height: 134px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(0, 242, 254, 0.8), rgba(2, 87, 146, 0.95));
+            box-shadow:
+                0 0 28px rgba(0, 242, 254, 0.45),
+                0 10px 25px rgba(0, 0, 0, 0.65);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            z-index: 3;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .portal-card:hover .seal-medallion {
+            transform: scale(1.05);
+        }
+
+        .seal-medallion img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            display: block;
+            filter: contrast(1.04);
+        }
+
+        /* Brillo diagonal suave sobre el sello */
+        .seal-medallion::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 45%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                transparent 0%,
+                rgba(255, 255, 255, 0.45) 50%,
+                transparent 100%
+            );
+            transform: rotate(30deg);
+            animation: sealSheen 5.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes sealSheen {
+            0%, 65% { left: -65%; opacity: 0; }
+            75% { opacity: 1; }
+            100% { left: 135%; opacity: 0; }
+        }
+
+        /* Tipografía oficial UTMACH debajo del escudo */
+        .utmach-wordmark-wrap {
+            margin-top: 2px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .utmach-wordmark {
+            height: 28px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 12px rgba(0, 242, 254, 0.45)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+        }
+
+        .utmach-sub {
+            font-size: 0.72rem;
+            letter-spacing: 2.8px;
+            text-transform: uppercase;
+            color: #93c5fd;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        /* --- TÍTULO PRINCIPAL: CIENCIA DE DATOS E INTELIGENCIA ARTIFICIAL --- */
+        .welcome-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .welcome-label::before,
+        .welcome-label::after {
+            content: '';
+            height: 1px;
+            width: 36px;
+            background: linear-gradient(90deg, transparent, var(--cyan-glow));
+        }
+
+        .welcome-label::after {
+            background: linear-gradient(90deg, var(--cyan-glow), transparent);
+        }
+
+        h1.career-title {
+            font-size: clamp(1.75rem, 4.8vw, 2.5rem);
+            font-weight: 900;
+            line-height: 1.12;
+            letter-spacing: -0.02em;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+        }
+
+        h1.career-title .line-data {
+            display: block;
+            background: linear-gradient(135deg, #ffffff 0%, #bae6fd 45%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 4px 16px rgba(56, 189, 248, 0.25));
+        }
+
+        h1.career-title .line-amp {
+            display: inline-block;
+            font-size: 0.58em;
+            font-weight: 700;
+            color: var(--cyan-glow);
+            vertical-align: middle;
+            margin: 2px 6px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
+        }
+
+        h1.career-title .line-ai {
+            display: block;
+            margin-top: 2px;
+            background: linear-gradient(90deg, #00f2fe 0%, #38bdf8 35%, #818cf8 75%, #00f2fe 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmerTitle 4.5s linear infinite;
+            filter: drop-shadow(0 0 22px rgba(0, 242, 254, 0.38));
+        }
+
+        @keyframes shimmerTitle {
+            to { background-position: 200% center; }
+        }
+
+        /* Píldoras de áreas tecnológicas */
+        .tech-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .tech-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #e0f2fe;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            padding: 5px 12px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(4px);
+            transition: all 0.25s ease;
+        }
+
+        .tech-pill:hover {
+            border-color: var(--cyan-glow);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* --- SECCIÓN DE REDIRECCIÓN Y PROGRESO --- */
+        .redirect-box {
+            background: rgba(2, 8, 23, 0.62);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 15px 18px;
+            margin-bottom: 16px;
+        }
+
+        .redirect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.84rem;
+            color: #cbd5e1;
+        }
+
+        .redirect-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .spinner-ring {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(0, 242, 254, 0.25);
+            border-top-color: var(--cyan-glow);
+            border-radius: 50%;
+            animation: rotateCW 0.8s linear infinite;
+        }
+
+        .redirect-percent {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--cyan-glow);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--utmach-blue), var(--sky-glow), var(--cyan-glow));
+            box-shadow: 0 0 14px var(--cyan-glow);
+            transition: width 0.08s linear;
+        }
+
+        /* Botón de acceso directo a Instagram */
+        .ig-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 13px 24px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(2, 87, 146, 0.9) 0%, rgba(0, 180, 216, 0.9) 100%);
+            border: 1px solid rgba(0, 242, 254, 0.5);
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(2, 87, 146, 0.45), 0 0 15px rgba(0, 242, 254, 0.2);
+            transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ig-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(0, 242, 254, 0.4), 0 0 25px rgba(0, 242, 254, 0.35);
+            background: linear-gradient(135deg, #0369a1 0%, #06b6d4 100%);
+        }
+
+        .ig-button:active {
+            transform: translateY(0);
+        }
+
+        .ig-button svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Responsividad para pantallas móviles */
+        @media (max-width: 480px) {
+            .portal-card {
+                padding: 26px 20px 22px;
+                border-radius: 24px;
+            }
+            .emblem-stage {
+                width: 150px;
+                height: 150px;
+            }
+            .seal-medallion {
+                width: 112px;
+                height: 112px;
+            }
+            .utmach-wordmark {
+                height: 23px;
+            }
+            .status-badge {
+                font-size: 0.64rem;
+                padding: 5px 12px;
+                margin-bottom: 14px;
+            }
+            .tech-pills {
+                gap: 6px;
+                margin-bottom: 18px;
+            }
+            .tech-pill {
+                font-size: 0.65rem;
+                padding: 4px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Lienzo interactivo: Red Neuronal + Flujo de Datos -->
+    <canvas id="neural-canvas"></canvas>
+    <div class="cyber-grid"></div>
+
+    <!-- Tarjeta Central -->
+    <main class="portal-card" id="portal-card">
+        <div class="hud-corner hud-tl"></div>
+        <div class="hud-corner hud-tr"></div>
+        <div class="hud-corner hud-bl"></div>
+        <div class="hud-corner hud-br"></div>
+
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            <span>Innovación &amp; Futuro Digital</span>
+        </div>
+
+        <!-- Escudo UTMACH con Anillos Orbitales de IA -->
+        <div class="emblem-stage">
+            <div class="emblem-aura"></div>
+            <svg class="orbital-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="gradCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.9" />
+                        <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.3" />
+                        <stop offset="100%" stop-color="#025792" stop-opacity="0.8" />
+                    </linearGradient>
+                </defs>
+                <!-- Anillo exterior giratorio -->
+                <g class="orbit-cw">
+                    <circle cx="100" cy="100" r="94" stroke="url(#gradCyan)" stroke-width="1.5" stroke-dasharray="28 14 8 14" />
+                    <circle cx="100" cy="6" r="3.5" fill="#00f2fe" />
+                    <circle cx="100" cy="194" r="3" fill="#38bdf8" />
+                </g>
+                <!-- Anillo intermedio giratorio inverso -->
+                <g class="orbit-ccw">
+                    <circle cx="100" cy="100" r="84" stroke="#00f2fe" stroke-opacity="0.4" stroke-width="1.2" stroke-dasharray="6 10" />
+                    <circle cx="16" cy="100" r="3" fill="#00f2fe" />
+                    <circle cx="184" cy="100" r="3" fill="#0a84ff" />
+                </g>
+            </svg>
+
+            <div class="seal-medallion">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOgAAADoCAMAAADSd1hKAAAAwFBMVEX+/v4CV5IAAAAyd6YWZJpJhrCVuNHZ5e6qx9rI2udkmLx2o8OCq8kCV5ICV5K90uICV5ICV5Lk7fMCV5ICV5JbkbgCV5IkbaAga5+3z+BtnsAwdaWVuNFWj7ZZWVlVjrZBga01eKg4e6l9qcd6psUZZpuFhYVsnb+KscwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACbUCIGAAAAQHRSTlP//gD+/v/+///+///+0E7/sI7/Lmz/DP/////Pr5RZptmklrrWt4W6ywAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3EPNqQAALT5JREFUeNrtfYmW4zqSHfWwE0xRokRR0ow93u3//0LfCAAkuFOZWa/dnmH3qVepVEm8RCDixorir38nV/EfQP8D6DevB1237OIX/v8C+rid7/fr5fI1uS7X6/18vj3+6YESwOvl67R7AfL9/PinBAohPY8x8hJesIjhius7RovVffxTAQXIrxECFlG6zv0VfiSRzuAS2Mc/B9DH7d4vJEvkLcjv16IE0yLf03v6F/8E2OJPoaS1OZ/H67W9R+nd6c1f19/WUb8J9NEL7Nf1frvdrwcg5hft0exJ3W//TwJ9nC/DYpw/xZihhSD3j+j6e8ta/JrIJpTn/jYv38TKHxIW9uvyW9v1V4A+7l9xNfK1vD/WllUIuYcVoh8/6ZegFr8ms0B5z9fwfstxPkvtnCkaUwGj8EVRPPl1qVolnotgsQUi1uvtHw80woSIna8jUf2f/+lf8GcXfpCtc1oJIUpreTEBVMsAVBvth3dO92uQla+fb9YfAr1dwx3d4l+GSwmAqJzgH6rCqSi1OgEtfHxjw+/RuhSLIhzE5Ov6+McBfdwu6WZmu5FE1Vblq6QfbFH0m5IBS+ObhFTVz/gwikarpWWNEvwzAS5+AJO/HypyBlN465qKNI6iO++Koh6/oXO0TRsWVxWE+aQhzZ1csTjX8EQf/wCgj/NXENr7zIrI1puiGBanBITJk8AqmrhNyyDMpzr/J1Oot6AKLue/G2g0KBDayVLpRsflYcFUMvxQTTYwwHUu4Pfhd8IUUYZFVTtnvZpu1muA/HcCfcQvPU9WEyKrNUupKgrLu1NEoRwDbTVrIX4AlR8ve4WldrrSVis5tjYsQ9+V328BDVJ7nmha4Q2Uiazi+jgsWtvQuvjZHi2riK0QJ12mLVqmF0tCKCunx1v2Gr7we0rpG0BZ10KULmMtC0k0g4HAfTurS6+DMirGZjKuIt5klA0yagg0i0LTpr2uA/achASoj78BaNidl5GqlYIErS6y+8LC0JaTbdQzOmc/Mq6ihN0x8engYURLZIenNwWavvfyOX8oPsYZpGe0nMLQspT5PQqsaLxb/EB6J66paAlgmf5h4oLx/RLvbIcHYuUCg2CBOv9hoOfwPKc0SNOqyFe+pEUiCaSPJNhA8SIN4/DWyhrnwy+fTXybD7pImVz+5RIvPJ3jTfxBoI9zUH8zyylUEtf+pWQWpeMVUpV1rrYVaVJwXpU06tsUSYjLqMS6PTcu3MCHXs0nQB/X4YEuXbLIqF4wns9WF+/+90v/SJFeqvBuVtAQXSMWPTsvc/4Q7uTxZ4Cy2zXZnRMJzphBi1uvXVjC/Uu0oMaE8J3v0WyzFmO9FHzAT7Rv8Rnlu5+3wgagAP16vI2DPzJBKeWzE3w9n3LyO/yC/rTFXAMp4Jzwwyi+x8PAxUdq6H7ejgXZ3vk6leOllEKV0EV17Qxdrq5BonypZnIqmimNOoE51MHKztjDcZVUfGBVRtpWaMQL9OTbFZGGyTKKFloWK2JeVle+LFuFqyxLTzqYfuG0zx8KaMIrXz3lNHsAs3Xmp/51/1WgrIYu5wwn+Sd09+3E/YLi9WJYRgJpjAUU4JeD5ArRQXYlfmq9rbHCIPFJ20pl6ccAXmq2RJFOLCA9qpKK4zgzNSQrA3pHO6d5jpVG5jtL+N6FwS0T8CcQkegGyWXhxQJDdAmOKDVssKtU5h3UtQhy40q2ys3CTrnfjnOH4ii5za1KG5kN9tNIdUhf5pLtdCsH0V29aPnofaVtcnHA1yhrPD60VgPPmvAkvrXrLwENHzZwW9na9OjbZqwNI+iuBPfRbSc7tQMyXo2z0NBSlC9jBu9M6WCtWj1iwGPuez0ovftAH5ckJElsi5GT4ue23WFlKI4C0f3g4tUUcEdfCarUQds95x7twB14n/4C0CC394zAp0hl1D7jO5Dlq6jhT0Lgim9cJOwCgTMrRmzXT2MUz+FZsym4/hgo47xnOEmMMpaiR0ClepmXesoP13K0Y72QkAkzCgjqCTFKUdMPpHcPKOM859xG6tzDLnPRBYOxWBLsrZ9cBh4d1HrRs9tSuVngrMqQHpLeYt+unCcBMEYqe3vaY4bnjS0lquLnF9lOoLNdjLhRJGJ0DxSdmUjv/QdAmQ9d7zOKjW1ayWg4fR//M7WS+HMPg2W3dA/qqyQBdu+Yt3BjoBT+NnYivdtRh02gjPM2V3Vlv03LtLS4FS9luQfAltHhbu0uVEEM/xUW9alzVSDogQk/kd6v2zeBspud78850ipqR2FMBYW7d+9YA6FdA7NZQcZ3d3Ld0pv0jPdTLu5Fd2HFiDlsIi22/c/LsrtCoZHmKX24CekRM5Jqd40qKXrJNlrsP5gCaQ3I70QPkdyG3esH6b3SjV4e3wH64Ge04pZJ+rKYAoRXrOWBu/ZS5BsY9182u1pJnYRt/MRDKmxg2M+6yhg+554/B/rg9ex5vHiNcwSIYsUn7RtIULlP9Pxpqo9rDg/uiTt9+KDaSeUPprsd4jRBad4/BsoKN/PLSFZfeVzEBvUukceVnT/AeaRfeE00+6bmTX5bDASzxzQoIVXUwx3R3a67MsVGQCE3LCouQu9Klc/4gD2Eax/nS4ol9KcDjwgyL19N1ftLWaJC5aE0lr+vx2dAaW+ODQsSXOkRV0rEXdMad2R3UnRQLAq3PR351zCirQkqVtRuFDNr1ITgrwXMilVFdBnHwbztlLdN9Kpishrf3h3ie1qurLpCCKHe3amNwoOKSAebQg9pFBy9biikYtWCTsLxXU3PTptX0WuDtoEUvQ5RuufawjkKMUi/p8ugeJUJ5ES8xKAQJ24q3fOKNV0Eyg9mmnbwjgRHkLwGzWD52w9xVyXXfhOdkufuNsce0SHPJl4hM0miFDRiH5b4YoX0OAqUBXfG/ITrFIuN0pEleFkew2lX93Ejx8pu085IG9IbwhJfJnmPguurYZuuCW+xTHG/ztcZSQAXf8fCGuZh7UkcdEbUc80Lt3lSao8RAmmTbFqyscFdHSj/dU14F4DexhY0S61kzq/FZ/upH4m876LSXDciA1U/IBsNCGFKWDxVH/smb7WXDN6mS1SwWPRBlymu1UO4DwFd30xFiyIpbonjrqrVT1aUCGGS3px2cxC8kr01/VokSMWSJvrKcKJYLz26EsITvKb3XG7TM6Vg/Xh1jFi3lSb3vA4gJentxjEV+pRSDvg57vPYB0pGd4gRyTpykyivIdCpEW71Myp7muRafHSv9cltMeCo6Y7tdkhvtiED82XSJPoQ7Ins/5w2zICOBLcndzqmpVVImlWndzM16X2ArtKUY0HNphSCwrqt3KQSlKo4xASTRnIxiCJDlq0J91a6gQouhZCmQB8jqqALW1V1rzWCGhdugYxnoaMEveYyRmRw1U4sTFupjgKFqVLmFfSEppuog82Dy9Zu6qNiQRPdh3xdyM6HgqBYaipcvcQT2jz6kN0XSX2rmz2X/Hjg0CGewarnGfxVEIhII2RPGy7zSG+xoYlkrQanvt+D1glRL6iJLDk9YUXITYjtQK8Tx5cUCkM1ZXAdIzFCsu6kWjnivFN+VMw40bWPEpVlFqaxvVZtT3ZJqYghoDP2W1RBIaLOG7NuK8vTcaB0A7xTUghSFJWc5J6+Zru0mHKiQROpOneIYkViW6glzUEkz6qnUG5uQHSMibCtWiGN9Wkku/ioTq27CyWMDKcbWY46LeeFrzN+VEzDJz0nkjaPMPrgyvMGbRa/mtCYpUfgAp1Q5Kp3YtkNaFT+qV72tmNZf0kRGIJijAvlIBQUHFPeYkr++nBYOfL1YlUtZKZb2m1i1eB79rgbIRDNgx2hcqqqcgsOq5uxCPlat74qWDrn10qRpru0mOzQvjCVjd/AN3Qoi8LHL2qVVUNouCMCfo5H54DhIC3SxXMITfYJ5WnXpfEgLZwRR9FHu1hedp0o3mKicm9DRIER+S4yl7AnKtkufvGpWnUjNSIhlJAJqshA0Hxd+gWZMFRaprUeItZiI7ginA3JYrG8pLcJESxWVK70MV0U7PDbBv4gl7maOelV1l5bIV45cNDkKftFQgah++dSkmeNIWFria0OofNE8RarbJ7RNgFqKPAvTbkW+lkDCgYqRhLYVrwhem6Zam8E5ShiLYfPE662WdO8lVtAKspM8eb0qBilQu/TzBlTg8aGZUX+am0rLu9RA/sphczUp+VFch1ih6ZBZ4/C30IFTsYZUuJKWKo9W8m2GiGbagFon6UgxXteAvqIvwzvl6NFZZVLmmiNyi3GSppWahQStX6QA6WCPNNKk+eMwpvEsjLuHzR8R//K+LU0gI76aFo+ITJ37boAlELzA8vNt7gOVVsCgrua5FVLegM2k+rIbITHOJuwGCHkb8c3nm1/mCA7SMGyRS1lParJQd8UxZ718i4tclXUR3KlyZIPMuQmq0aqVW7uF6JCFulwS5lrU0YVZmlrsk+Las76LUchfrdKEBC7qBfZfdRHgkXDwluicnd7WlzSYtG2lKMyPy67FEaf9IbzlC+2oaq/FpUIoqOiZfVEVW5V6QpvchSaVBz+oKXyU4u74oQuxvlVJG+oXNfY8IJFpG89CBHBOdBrporCApiRibJuM/cQZBd5qBB4kaRFUdeoZFlV1VPGWrhU0+GGTKKdcKiViEu56POIwI+sqZ6RMzbZPY9ktxgiKF+95KL5MVh3ruJiKZYgI24zKYjCxZaqv9SbqsqhRBzzDfqzK01MOoIEdvQm0rSOC+y6aokFzp+jW/zSwBpCGw3jzKt0KEnWx1SKwW8Z/DPQIRGzBLYMxNk7sRm/qklRS8SJTL9Y0IBFSavk5KsOy0xBE0ddiBwxpKgSwgNVv+fsRu6mWqRdngNI3Ts5iGPqS6t3mwD9ymzL0JkUlCfv0FZuZA0M1WB4l0eCAAvyxuWKnYb+keR26Uw6Q6QF4Hv2sBE5MsueucaOymrbp8VIRHjvY6CP3G/JoNbRl/DFRliH6hHQA6BznK0v8bLG/cETVQSGNLYff4ipdctrG+RgK3K0DJT2bpcymPN6QZLRxI6KXude7otVGdw9KLEX9Eb2ktakGwJmjXwXuqRai6cioy7bMigTNdcpzcsH67BijEdMY8EV6DOYxbwYn0xpkt2ij4kNnYMjAagE14epVRuqo+bMcvcEiyLLjoqu2TmoyrAAmfhngRUbrdhqigbKVK2YtTa4axwPnHXMkB2550B51/bCbtj5DF0LJzZLGwuqu7Tv+txgDfX5EqkpjxNCJeuSMn9aZQq7OI/GfSmJEaq16l7XlasJSdJEHTJgL2tDUbfoG4tZdnOg5yxPiJqWtiVbiiJvOaSXmrXgYx8b6R+G72DiqX4PUvWUIVJSzeyHKttoDb0BmUCIKtT4rojNyoOuooU5xXJ2VN81KIruo2Q9Zyh6tnDtPe7BuY9S75EaXY1Tmiw6a6PRE7AGwdtSvN4O5Bav5nobXJbWt3nTn8jCoUQKKow4ylINrFgrX0FiZ1wmKFudNVTRfrwNQDkolrZoaHmkBalNiGpIuxpgHrGIRIZV52tQSNmCAbYMVJ+gYPttxl4JfqDS35JdE1JFlI3raFYDKtTb1zTQUq6z7LB+IZ4moo1rs3RpCJIVcYte+tCCDXaTHrGK4YpCrLAzM2YRns26g9hiOZ+VQQtlWNFWsM2JK8pF3Io2Jxxz/mAObboQwOFOxAmL1+tcAoFSNoCtGLx0BCxk0rvJwBQznstA4+QExZ+hmzVTPt06LS2wFtjc9AvfITZ6YvdDZ8bFEBdqCQkCPnG/En9SEAA9BCYyKlTLjSQUrC8vjXNZAWk/vKInR0WMLfThXATAWFu/QjKZMxN27YFOvTPesl7GCkh4AUEZ2acOrD3cSYtgdxlYgI1tQqSvBPV+6IFRDlWU7VY+XHXu3adC0J4qZ+To3AP9ymkR6qgp7loGP4OX1XcrX1RORdqG1GLVsCari6jV2i78MoiBLeFX0d+SitMa3hUiaPqUfGwnoBdkWb8QFKxK2W2WMFWsM/GwejMxtqTXBPQRZHloGeyLC1gxabda61fOnAoUTp+igSQwcYlcqJUJQBVYU3hAsejGUfCCQOvTqw3SW0rqYHtSNxSNjNnyJ4gGs6AuxcpY9/AmLUKAPud/CAlEtzukHtclt/Azpu+DxmbxgxifQAb55TLoDcf61olgQuNjQh+a0FVL26U2LaFHoRmigQ1i+1Rk/kR4dCMbp2IVyWKEt2eBRXTRLqOmDsWMjIIKVEbhV7fIzHuy5HEmBYWdCa1rQzTE0FakYvSaKhXDW8LSW7SPOOgiNGzhiRr51L5XPqhlRlJLvdD8s5pjrU7hPpenQaVNWgSiu1CFgkFDnEEThXiuOxViQu/fjeuzUF40p7fjRTfPsCIoR1UA4YOdVDXqAF+nAAukgcNGyB5l+VdkzWR4LFqtlKk5CAqHnRdzE4nuFhwW+7oteS6B7JZbWdoRYTAi5sbbFNR64QX2O5oIlAbc6EAVKBSkqJ00kkiDVYUMIOYgRR1bEqlpVqTcMuIdeoscKdt2y+mmSwBKdOG2XFAeJiqtRzmLPJAEx7OKrMTGXKBGsSPzhCaqZ7xEkTrNddScBkelaJ80xS17aCVkjVW6EN4Wfc3KChEuBdNN6vjXs5ZyghaBnvMoymkoKzq92Ylx5VZsYXBrUFcfy22kii8qTbpU0QJHaYaXynQPT0SlfejKJJNYmFBKnqqYkbtoO4hUkBu9RlsCsZdWCdRzwfcSo+x34PUF66KeF1FgPpJkPD7WSY0SW+VriarXfUDPiLcIVkUxv9XDPm7KmvYiCrkbnzoHrOrVDBhlYE+RW2uyVHWJSAw+21RqtXwjBFTI+0HgsYK7lrXRk/p5MNBrxotUKryQdB9hSstTbZfDiBh6rTPrKjjHgoEvgry14dm/w7rU3kd3ZFjOUCBgWiYbLEWxSrZBtRIyUGq1lJQYau9Mex7YVgzF9tGBKQIBvPQ9As5aeqBNSvb4YqfayVIqcVR55J411bKR+z+hTjw0hWeqBM1sytaNMvo01Yh9V8iEiDaY/D6UnLhNuiv7krlYNtfnYK7BvhSsdHvroinR5V0dU2EcIDjp3RIngM1JL1xC9xSIlD5HhQBGV2Gbkh6y1ftd5m4mEhcl501f5ds2MK6DDoTp1VuVSDByQ/VPKBhxZV64cWegXxkB5OZt9pFSM599nexu4c+kushXgQZQH1f2i/ZpIlAgRGuZrbNwGLI9dRNjaDCZCL1nLiikttwMbw/Ot7Ex3Dpwowh05IyGN1TDG6XbCqCnyBWn+JpeSisfKzELlYmDCrcOoC4IdKN8VmiCfvEmRQkpsNghAI9xDTAxLdOrjWCoDxVHTx/74+yIDEJcEa8vRtYFNZI02UO1gQmycfJir2a4lKXofAuVWcXwPu9ASC+q/N5Do2HoMPSe/s+ZdJ2tJ+kdE4HiLhDQf8q3tjSLw3FZz3vdyumQ8JOWv6F5y2m8/kJA71knDxKamDrUhuJmFQYMlXsNAgaaJXkOKtKIWFt00t2zd1UNtyFhA4ewwojnlKylI9CYZdPjwpD62e55alnp1iwxwUD7wFj+UYZ731qj2h2cFGfpXaQgjE+fJDCxJMwWYwtKaxfiCfnza2P+jhTu0Onmx70m6+Ww9bNkWu5nncMxx89AczPqm3z1FBdoqJ1eo+qUpZnDcK3iHbUpfS00G6JsJK00tYhKyDj6mmvRV/wBQNHp1gdRzLjMrDqt10y2/KTbye4cihmmQHWFeS2kDk1aD0S4qp0F7UZt/C7Qh6rXKgh8wnGnJSOgToHHYtaGa808BQxkilrF5/wy8CSz7ntzrFxZueKoEdCcL+QJfcVNmpV7VjuaSI/SdaGlQMumb4OATmpZaqsK0c0Yi9ftQqaMO4ZHBjI3w+tAixhkkGrdI2Wgy1OnuPRQu6feHP3xFE2R5XeQ5KWYo0mWA544GXG2l7qqEsF1GSNK8ZgG2abWTbRMmbuEW/n2YaAMyl3ER0CfgSptUJKGJCAQGNULf8el7umfOcSU4WGqsIp9iCnTuC7KJ+VQT3aj12u97wuRwHQDsgq8KJPhewSap4BlN3BGnmN80vU6A0yqtuzbHVjwMBOj806HNkTiAGgsULns1dTf3fTpIx1LiyhcXs/aTvXi6s5apSLQXntlkbI7p4PHQHWNL+RcH3Xhyh2g71F1OUqDYgQLDZCyK4MDgw3Ijh8RUItokYOVbr0f7j8E8RX3uds5c297uqK6ehcoSUxjaiIY9SZQCuWDZXCXelBGW0DF6bRSXl5wFwqtGvgNBYk5V1wr1P0pog3VUKFBsxbKVKA2Vzd9BNJuOVEJKEVpFJX9wPtS46jRZEW5vMOGro89oPnAlIX9S1NdlEazJ010qSnBL1ILgW8HVvXWQxHDkrqJFLfadBYT0KHKqKt7/XhdBVq9M6DuWysaoHZci+Ehuo5MeZLXqnehUS0jaa75Bvdp2cK8t9veI1CRDQNSRuyuaBgK+9TPHa1bZlPyVoI5FCGW/q2I+aEnnTl31XcYkNOY85GlIgZyRNGZu024o3kp8yrIofpxYY9W1fBn6PaqNuxoatParJyDcaSBYqSNDJd0pikpPJBqFB5ZrLGhONJJ7rjEkTBUeVlKXyafgOZ2FFQTF0qeeFBhoIDdOjMyVDwjt5gTKukVTcXjrjyqpzqFvktjSxr12DZjbj7fAw3StM+9WTMo5eDSuCqvp6rbiR3NgfpJ3J3nFfnNoT0bpSRBv6ALRFE9FZOLMPaIGn7QxzWte5uHSxzPqdrtl09cdwS0d9eWgJZDbYwJkrnrvRghzWbpnCTVzStnyTtPo8nwiKb6xefNE2GIHsy53m8WTm5amZdk9+WPiQLm3gsSlxS7UDyLkesUlWnVdged7TYmayCaaVOOymLiKi0lsy8ujeOJiI5TD7GykSYjIjFP4QqqQSdzZE9uvwMxzMER+dANJybeywhoOc1IHAilvOTqNuW86AuRRBpaKSloSTUnMScZYswSfV5w3BAdQj0APeI4k6qMYgCZqPfHWegAsR/PhZB9D/oc/dE8wiBn/tyR4BjPprJLpZAdeRKUz40N6CnLSdFlNjWGOl2qKha5ChT3as31rYe8syw4Vo1bAZQfptClCMN9oTkiV152/4kWPCIPJaxjIW9qDGBloLETuhlC3EQUbFZi3fffL0QwdifklF0I4y43wqSY0XlpflpeeX2yh8Y00vRymqGra750GJ8rub92XPqGuhHpqUWqL3xVG1zyQMdljOtKvQaUo4CjuO7cRa+Kww3YVL3f1+FhwizCMlVFobMhXewo1cXVsU43Pcs1G0MKVovWsuuZKnCWjoxZBHqaT3NGCU1bHL4aHoZMF2nTkAh02EOaCvRoyK5IY0tNSdMTBDNdO444LTRsbl90k3EygtPvIEb9mlGkngPYnJLocy/UQyXGI76EKL59kdb3+k20CNldJAAHEQ4tMJ5GJvp1oObAFBVDJV+Z4NOIcVGqae5lFB0rLel1Q81UfYFV27lvA3Wqokud5i1miaa78jkaAD9N1e3PFqFGP14lmw9WlNNs2jg/6sOwCPybV1jajYrHI1dg7UvlvoOKdX2mp5zare7IQ0YrRnBGUC5JpdxB+Z9m+dFRxlvkkWgmF95K/z2QtEnfdt7ZHB1NO6HV5NC5Uak+vJ0Dc6Hw4SazLuULpuw1TFi+9xnvcQ1DerYm9Vp/d5PSbANk58qlZvWUWxzNZapigyXTJMXdJYdm9DrMhclb6XyfOJrUMNzmY5o4423ecd+0p89hIkgb9N5zrbK4LGcVuQgTk9LkC7rCNccU3ulls7nUYWiKajOgX335zaTOiK1bP23C6NPH2gjfhpnC1P4gUglYNZ1WWi0GwYLrZD74Ln8KjaQhlitst1Z+M6oco2XgpNeg8hFN+XRmrgqyT7lgNQ8/19h8k5KhrVFAe1fqUAs8sp3Qo2ss7yxC5+jQC2KZguaz/8uNXpA1Cx4GyijqI+kNBT8/pg1wwuviaIn1gYFmfHKKhPYuqXpyfFLMfagFZG10HY3EesnR+TyVdJ8DReSJ1HUa+o0iTWgbIZ8Kr9RPd3TM3IHRKaG/NewRR4Nhsa5lNt2or+4c1evqec4YIc/PZJfrtvtS3e6Jo0C4A69MBt1NgPofmOouSm5uA10/XmlUrztqTPN52iJosrL4YN4QYgpUGSBlspMgv6XgRssheWImQD/4/KVqKhnqTNRb12YSXL/mFdijiKcaJY2DITZK1h/oIWYZdtTRGyrmehd6AvQHO5TUtYuDIzhCH+Zu9mH6e2o4nHdJjKIpgRpXVh5VivWzm9RChBRo2KYpT2RGm16fvi+4Ay3q8vkRfpzXT0BH3ChPelehtlkdVxYoizvNB7TakAB3MhHcPGrx+pF7BA0iZoXmSo2d0azB52tWgx16n8KnUAvYsS9GnKrSys9iojpVjs+BCvl9waUy+LAWLpfEPs176buf+960YY6RTy2ywzw7fdigo6nHufnA8tQKnIoGBy0LrVx/HyfFH0I/u2uWogv3frxGMe/wLn3q1EbgI5BjtL4cNKUlinUXarya9JINFfJ9Qsf+aD3JLgW9o9GVJhbOg+ln4BRpYtPA67uU9WDyGGdguIORI6SuscvnayTaYXg3esdTDk1L+aODJ9C82ibNYudFRpfI6IeO4EveKOFGxwalgMqxOINamThqh3A+xcSon4UL4L35CU4bgygxQ2a6tT6mHug9Z4GVmUXTMMPimPttxcrApazSjqdrUPukaH8ittzP5nSWPvPTNT0PE3CKftrYwALVaHyOimMshTw4c/K0GObRcjwXB+eJ6R+tZljQweWmAT92PFDukk0eW5zDoEYeeNjtW337Y/26PM7djFSxFj8FGSaWxkObuIUuzOiW23MYRuRoPIchDSg16sjI1DC/bvE3eXbeCvdzoNhNYUGtf9IcBFzt6LhdIvDTyRrnUxbGHrrxqv7sHBrFUB3TuqdFdtHkhNYJ+3Og/RAGZHnA5mP6UY+KzC/TWSk8Ku+aya6kg2ryI+iIB+7fXSvK09qgpSxs1Aj98wVNKrdcGZd6vyxMv+FplrdBHfn6RYFlNZRgyUPTYavnG0Fyv6ymMnDK/xQndR+HaIKl7LHjVAglIeWcLeRAxyEyE3dmlVWoCiS29o8YetKxUcuhlzIzO636KVDUZ7tncCwxtJh8+5X2u4WZY0P6sOzPqHDDB2gj9pUlnZdgl/mi62x2ZM2PNZEq1Er2epiyuzBzbDy4U4ZOg3fa23FCqT1IBEcR98IE0TLmPay0PYXBjtwFYZpvaaIgpK1cH9+ZDQbM5gJ+zcfT26RzE+4PKTgNHys9/kcX8sKnKoU6UJZDR5BWVfhdOPryI01UFXKo5FtKi15HY9yLleG6qbkjxiRiTRaGK34QrsMAn0k9QoPzYqhBrp0fCCjK6iNOVIbAAhi4KZcldzxitxhP1x0flaFjTS4UTGAcz0YfDgiiEUItlHw5X9r3wvIpj3Dv0WWl4iYr+9hfJZY90fvySMuxheGapILnP7W1w/S7yPfbo8KL8r9xiGx9pgG/iv6Jw/uiTSfw4VzdxaaeYEFuK2Nnb/l83VM0onxW2FDxoYtOvo6tKKb8Nn5xoufi2+tSHeWFdMKRSHVw4bCY18K4scvqIOH7iAdy17m3r1HbtHihL+KgnXPvojwM1BPQg+mzDkcHZXOcOTpjUHWrskMAvyYHURWzafzDCWI0HcL5ifYWC+eCrY1UwtEaS3a3XkSPMLc4uEFxQFQYmR+dtJAEqys7XtD1Gdjj8xXAIes2P5Az5ZyqQ9YU80B8HYGiY5L+j4awxtCfyBlg6myoTklAbfU8xpbQLBzCQ/JlR4dKDH1pU5U7Azo5MWPY40g+OxeVm27EkUAPQujVKzbseFR/UClciYm5KLTyIApvC3tCQ7jiJAr8+tCJWyRQKeBXDaem0fkr1UjlTs7NKGaH92SKt6+ng2zA8MfmSZy5sl26Gq0oJjjotu6BKgJaWSTTqFAP7bKk5XQZLRBVmh0UlLKJbA1N4Pkpr64bjSe9bZ8lcckZb9/tE+aVQvtHXecOMKQaLEOXdRyEg8o5hZXEuQXoT8WPpULBCpoObRWEA1WDh0z0G7YgnjfgxpRoiHMdOUsiHCQ27uCS76SRQHbTuRlS1Lu5QwCNQ1FqbdCfDquK/n6ILS6qkDP408YCJFtXR1IwdDZI8KuedjLsW4xif7NzmYqFsxsnMRU9pPnTicCq2T+WEAUBENaj/rU+BJRGIcTCQZT+rwzjZ9fkfugEn+xUYK1NFkOUKfEomlrsrCkOhfsIqN8HipHyTUoIYuScWS5bJU102T/Bh098uWV9MplDSkH8Mo2DhPS+jgE1RRxvY8im0H8Mzbqhn7joqklAX7vrWeeR2+UlDZpoH2g4v3Hg9qUdH1pb9afPa/k0R4BiXESJ2WGkkVroXQwzQbusr6BwNcwL1BGPoXAAWu+42pBbOTpXUi55LVPyt3luWnaw4UAiedjC0JAK6d2ypz1Q9Fko8DurMSMTdsVRlQteJ2rrMfJFcSVOZfaAUm9mlFueRorJ17Za7v9dOiGuWDuqcj6yiil3lRsuJzbyFAyU/GkMIW3R91DRQTugBRaDXyj4BgsD1mB9y7Vye0DhdJZ0kjl/8YtNu0b/8MIwteVj0xaP/GOtNasO5GT16KgcRedd6U2gZEcRnoM5oVGptaZlhXrDj7qxr/pVGcRS7D5QGvJl6vTAkdGgcgPMUxVLR0hcH5+cVpmfPipjM+zM7bMoTltTvj3QQ1e1uUct5UaiGuzC3JymlAtt+ufl0+FWzx+9jg98Fp7TXvN5dE/doIPbrgD1AHo081DV60AbmvKeGPtTx3OCGqQdxWS+RDj6+ZMTZSdHldvxOYQ5ayr0c1klOTopDkAbHpNGdsSZaFga9mfY1qDWnu2L3gCq6ED05Eeh9xDFx02a/qHHYYXL6mHeK2cETw9l10uzOdL5Ieq01IiXgL5gS8qX81CSROI9tYlQWTJUlEfLrEaZhd8CWlGGo5oaEhkHOuRnBLMQXj46I5iDDV/ZNhW2XGuMQRe6Fs/KLHFdaFg6qq5GU/C7hW9avtuyNgBWt2UlYEvh1tDwonXCgFouDM/zi9P8ePyjH+e3F6jCzjnek3PZRbXeA6TJf5vF8FF0jagBgL7tC3V3mMEKB4ZXVMMAvtHjh9rjFh1aol9RvXxcuVNr34yjnuR4g15/ejL7SW6cC0RzC8VpUhgOoN6VobTe8FFjLm3Whv/TULQBTJCiD0VtF4AiNi2M8adD1+W8cbj1BtBwZPn52Jeg6p8Gc45y9agAD0APdkHNgL4w2bUyVh3EyRv09tfnQP+6L539vLpTLS1qnhhEJaN3h6PvDgVnI8ebGrqUabQ89v3hUON1nFtA2Qk/308fQOXhIQPQd71oeOyirazyUAptS28KL49+OxmWr/Nf3wIaFNJxpFQ7hCkoKWmPgU7LkfqVADaAlsPkPDRdHpZa3CVL3v3xTaAcuv9aHo2zeHXI0VRdzA0CaJWP/zV17KgKQM3L1mZ0zthw+Jwm8XCHYSZGtIVzGygjnZ5Fv32VffMIJjqFqaKY14bc4FuHjlJNQF1LZsaG1wP8Fo2OajjGRosPvpSl7rqJZAfog1XZ+ROkNjUttRhxWNJxwZQFxZ9wPKlRHtVintqEccIC8qOaG589UCvdtmI8P+LwejLOx0+ABiNzmZ8Es371jbWAYmsK+GHd2jAI4PmkQlpJ5QaSoOJ15IArDgtWtu3b5mM/6Cdyu2FYjgFl5/QT6e1b2TBcIMw6CGeoE7L8nBL+mU9V4HEI1LhvYxCKZj1/KLeXx18/Bfqp9IpYYYa8RWgy6zrqM3sxLaITJVhr0VEKhocWVGV4G8YUpFG9OvaDHtO39yPreQBokt6juhdjNEMUX4faBEzGM5OYyLQ7H3Bpq1apX9iLo7TvqNweAxqk97A99S/5/T6zxZNNNtaT99S+3B4EytL7dT/Ie1Hw+rMaojqOYz/C4698pupfvwQ0SO/mWIrclcl6R7h9f2AMdT1wBJf/0LjsjTo7lOcIzsdfvweUo0h4dIc2KgJmJh/sVPWj9WkLN1nzRc/in/mgq/JUHNqiV37812MAjgJl3jvyTzeHjtjIjVo68TcEzxC1oyhKHAiIqPvwK+Aid1zEWo18bOOWuj3zhnr8MtCwpl9HDKqO4z4NJW5qE8eeU+WDc00sgJBdjZOQMD66ibldVzd16PRyQpkDvOjM63k+ivM40OC1ne77LAkjkIgNwI7inAjIqqaTOemk4JLyjjR3jCqKDJ1y+nryhC6e/kY2hUnESdtdXRR20eV2+O4/AAqkvCd2uQPlx/myYbwBpmdQEbihSB6CEEwGdTj9ASlJ6lt/cT1ficNt+Mfa71vPy2F1+znQ6Mxcbnvaty7CkRcxxahDd7pJJ1bzT1U6/Z0LxLvYbxNPylB70YTwyB9//SmgIbyCJ7m9qEINFDex2v6g1fhT8mD5jV3+K6V2cN4/FttvAH0EmTkedvj163KnURnA+fijQCMf/Lqfj8cd+oE7GH+Tl9thAUPFbVse9z6vYeNcH5/e98dAo066nM+HnFQ+mCTgenHRzjuFnutQxYSpulI2pjwIkzfN5WOY3wEK6kur+QX1uw+VT0YzsSbLcsFoaFS2TRiEgebRkjmROBLSZDn6ut/++luAUmYmLOqRyIOKQAUdO9R3I7iUm/OM3I9S6etSy9vm9vjr7wIaeRIe8T5TSkBbzjtS2q2kEsXUAakZKE1VFsdgnh/fu+NvAo3ql/Tv5RhQOrRRMlDPf0cSkRiEZn6/CxTf8xXgfhPnt4GmRU1Pel90HXkzYUWp4lmA3YMQtdyfoIpNoJewOfHfx7dv9/tAk/6lvXrdB8pI+eyB54nRErvXPIccFcXzE5sHFZQe5eX8g3v9EVDoX1a8X9f7ugbugUIDexXABaBt6HsTb0/Hj6pVbyzAPO6Q/QGgydTQHrqtQFX5fEMaxyfYmrxDV03fjuFWaFBcza/r7Wc3+lOgva1ZxToCWoUDrVQQ2lRYCCW8lB0klJfTT/fm7wHFqob7+bpAzC5TrJf//L/+dSgHD2FdkAdHJ2qFbivxP/71vy3szPP5F2H+CtBsVSFht7G9AY253QL6//pv//tf+qV1+r/8n/8uw+OZCQJeuyW393dg/hbQDCtJ3O16+bZ3As0GkJffRfmbQCHB5yi3JMPn+/Xy9THICwS2Rwnpffwazl8EGnZrAodbhhRfvz4Cmf+Ly/3xm7f2u0ADixjQXWBgbzde3FXEX1/9u74yffvbt/X7QFmGM7FlHHzd79fxdb/f4y8u2fuxRx+Pv/4ZgEYhHiukr8uFkJ2H607Ax0tNm/v2Z27oTwFNYnxUJdG63x5/8l7+KFDCCkEOm3Rpm+LFS9iij8cfvpE/DXQMON+mtEP/BoB/N9B/+PXvBuj/BXY3chmxpiKdAAAAAElFTkSuQmCC" alt="Sello Universidad Técnica de Machala">
+            </div>
+        </div>
+
+        <!-- Tipografía Institucional UTMACH -->
+        <div class="utmach-wordmark-wrap">
+            <img class="utmach-wordmark" src="data:image/png;base64,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" alt="UTMACH">
+            <span class="utmach-sub">Universidad Técnica de Machala</span>
+        </div>
+
+        <!-- Título Principal -->
+        <div class="welcome-label">Bienvenido a</div>
+        <h1 class="career-title">
+            <span class="line-data">Ciencia de Datos</span>
+            <span class="line-amp">e</span>
+            <span class="line-ai">Inteligencia Artificial</span>
+        </h1>
+
+        <!-- Pilares de la Carrera -->
+        <div class="tech-pills">
+            <span class="tech-pill">Machine Learning</span>
+            <span class="tech-pill">Deep Learning</span>
+            <span class="tech-pill">Big Data</span>
+            <span class="tech-pill">Analítica Predictiva</span>
+        </div>
+
+        <!-- Barra de progreso de redirección -->
+        <div class="redirect-box">
+            <div class="redirect-header">
+                <div class="redirect-status">
+                    <div class="spinner-ring"></div>
+                    <span>Redirigiendo a nuestro Instagram...</span>
+                </div>
+                <span class="redirect-percent" id="progress-text">0%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Botón directo -->
+        <a href="https://www.instagram.com/" class="ig-button" id="ig-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+            <span>Explorar Instagram Oficial</span>
+        </a>
+    </main>
+
+    <script>
+        // =========================================================================
+        // CONFIGURACIÓN DE ENLACE DE DESTINO
+        // Reemplaza esta URL por el Instagram oficial de la carrera / UTMACH
+        // =========================================================================
+        const INSTAGRAM_URL = 'https://www.instagram.com/';
+        const REDIRECT_TIME_MS = 4800; // 4.8 segundos
+
+        const igLink = document.getElementById('ig-link');
+        igLink.href = INSTAGRAM_URL;
+
+        // --- LÓGICA DE PROGRESO Y REDIRECCIÓN ---
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const startTime = performance.now();
+        let redirected = false;
+
+        function updateProgress(now) {
+            const elapsed = now - startTime;
+            const ratio = Math.min(elapsed / REDIRECT_TIME_MS, 1);
+            // Curva suave para que el progreso se sienta orgánico y fluido
+            const eased = 1 - Math.pow(1 - ratio, 2.2);
+            const pct = Math.round(eased * 100);
+
+            progressFill.style.width = (eased * 100).toFixed(1) + '%';
+            progressText.textContent = pct + '%';
+
+            if (ratio < 1) {
+                requestAnimationFrame(updateProgress);
+            } else if (!redirected) {
+                redirected = true;
+                window.location.href = INSTAGRAM_URL;
+            }
+        }
+        requestAnimationFrame(updateProgress);
+
+        // --- EFECTO 3D INTERACTIVO EN LA TARJETA ---
+        const card = document.getElementById('portal-card');
+        window.addEventListener('pointermove', (e) => {
+            if (window.innerWidth < 600) return;
+            const rect = card.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dx = (e.clientX - cx) / (window.innerWidth / 2);
+            const dy = (e.clientY - cy) / (window.innerHeight / 2);
+            card.style.transform = `rotateY(${dx * 5.5}deg) rotateX(${-dy * 5.5}deg)`;
+        });
+
+        window.addEventListener('pointerleave', () => {
+            card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+        });
+
+        // --- FONDO HÍBRIDO: FLUJO DE DATOS CUÁNTICOS + RED NEURONAL DE IA ---
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const pointer = { x: width / 2, y: height / 2, active: false };
+        window.addEventListener('pointermove', (e) => {
+            pointer.x = e.clientX;
+            pointer.y = e.clientY;
+            pointer.active = true;
+        });
+
+        // 1. Columnas de flujo de símbolos de Ciencia de Datos e IA
+        const symbols = ['0', '1', '0', '1', '∑', 'λ', '∇', 'π', 'AI', 'ML', '⊗', '∫'];
+        const fontSize = 15;
+        let columns = Math.ceil(width / 26);
+        let drops = [];
+
+        function initDrops() {
+            columns = Math.ceil(width / 26);
+            drops = Array.from({ length: columns }, () => ({
+                y: Math.random() * -50,
+                speed: 0.25 + Math.random() * 0.45,
+                opacity: 0.08 + Math.random() * 0.18
+            }));
+        }
+
+        // 2. Nodos de Red Neuronal Artificial (Grafo dinámico)
+        let nodes = [];
+
+        function initNodes() {
+            const count = Math.min(Math.floor((width * height) / 18000), 65);
+            nodes = Array.from({ length: count }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.65,
+                vy: (Math.random() - 0.5) * 0.65,
+                radius: 1.4 + Math.random() * 1.8,
+                pulse: Math.random() * Math.PI * 2
+            }));
+        }
+
+        initDrops();
+        initNodes();
+
+        function renderScene() {
+            // Desvanecimiento suave del fotograma anterior
+            ctx.fillStyle = 'rgba(2, 7, 18, 0.22)';
+            ctx.fillRect(0, 0, width, height);
+
+            // Dibujar flujo vertical de datos en segundo plano
+            ctx.font = `600 ${fontSize}px "JetBrains Mono", monospace`;
+            for (let i = 0; i < drops.length; i++) {
+                const d = drops[i];
+                const token = symbols[Math.floor(Math.random() * symbols.length)];
+                const x = i * 26;
+                const y = d.y * fontSize;
+
+                ctx.fillStyle = `rgba(0, 242, 254, ${d.opacity})`;
+                ctx.fillText(token, x, y);
+
+                if (y > height && Math.random() > 0.98) {
+                    d.y = -2;
+                }
+                d.y += d.speed;
+            }
+
+            // Actualizar y dibujar la Red Neuronal de IA
+            const maxDist = 145;
+            for (let i = 0; i < nodes.length; i++) {
+                const n = nodes[i];
+                n.x += n.vx;
+                n.y += n.vy;
+                n.pulse += 0.03;
+
+                if (n.x < 0 || n.x > width) n.vx *= -1;
+                if (n.y < 0 || n.y > height) n.vy *= -1;
+
+                // Conexiones sinápticas entre nodos cercanos
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const m = nodes[j];
+                    const dx = n.x - m.x;
+                    const dy = n.y - m.y;
+                    const dist = Math.hypot(dx, dy);
+
+                    if (dist < maxDist) {
+                        const alpha = (1 - dist / maxDist) * 0.25;
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(n.x, n.y);
+                        ctx.lineTo(m.x, m.y);
+                        ctx.stroke();
+                    }
+                }
+
+                // Interacción con el puntero
+                if (pointer.active) {
+                    const pdx = n.x - pointer.x;
+                    const pdy = n.y - pointer.y;
+                    const pdist = Math.hypot(pdx, pdy);
+                    if (pdist < 180) {
+                        const pAlpha = (1 - pdist / 180) * 0.45;
+                        ctx.strokeStyle = `rgba(0, 242, 254, ${pAlpha})`;
+                        ctx.lineWidth = 1.2;
+                        ctx.beginPath();
+                        ctx.moveTo(n.x, n.y);
+                        ctx.lineTo(pointer.x, pointer.y);
+                        ctx.stroke();
+                    }
+                }
+
+                // Dibujar neurona brillante
+                const glowAlpha = 0.5 + Math.sin(n.pulse) * 0.3;
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 242, 254, ${glowAlpha})`;
+                ctx.fill();
+            }
+
+            requestAnimationFrame(renderScene);
+        }
+
+        requestAnimationFrame(renderScene);
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initDrops();
+            initNodes();
+        });
+    </script>
+</body>
+</html>
